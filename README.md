@@ -381,7 +381,7 @@ The default `main.py` does basic setup, reads the config.ini, loads the default 
 
 If you want to have some particular code run on boot, you can write your own script.  There's a little bit of required boilerplate to get this working, as the SDK needs to figure out which board it's running on and which carrier/chip is present.
 
-A full example that you can use for this is in [custom script main.py](./examples/custom_script_main.py), and you might want to start there.
+A full example that you can use for this is in [custom script main.py](./src/examples/custom_script_main.py), and you might want to start there.
 
 There are some useful hints in there, related to memory, logging and more, but the short of it is that what you really need is:
 
@@ -400,7 +400,7 @@ tt = DemoBoard.get()
 # pretty much it
 ```
 
-See the [custom script main.py](./examples/custom_script_main.py) for all the details.
+See the [custom script main.py](./src/examples/custom_script_main.py) for all the details.
 
 
 ### Automatic Load and Default Config
