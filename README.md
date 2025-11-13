@@ -331,16 +331,21 @@ will show you all the i/o ports you can play with.
 
 ## Initialization
 
-When the DemoBoard object is created, you _may_ give it a parameter to indicate how you intend to use it.  
 
-If not specifed, the value in [config.ini](src/config.ini) DEFAULT section `mode` will be used.
+Since only _one_ demoboard exists, in general it's safer and more efficient to use an accessor method to get ahold of the singleton:
 
+```
+tt = DemoBoard.get()
+```
 
+The first time this is used, the instance is created, using the `mode` setting in the DEFAULT section of [config.ini](src/config.ini) to define how it's being used (i.e. the RP2 driving the inputs or using external means).
+
+When the DemoBoard object is created, you _may_ give it a parameter to indicate how you intend to use it, rather than rely on config.ini.
 Possible values are:
 
 ```
 # use ini value
-tt = DemoBoard() # whatever was in DEFAULT.mode of config.ini
+tt = DemoBoard.get() # whatever was in DEFAULT.mode of config.ini
 
 
 # safe mode, the default
@@ -357,9 +362,9 @@ tt = DemoBoard(RPMode.ASIC_RP_CONTROL)
 # ASIC drives only management pins all else are inputs
 tt = DemoBoard(RPMode.ASIC_MANUAL_INPUTS) 
 
-
-
 ```
+
+and from that point on, you can use the `DemoBoard.get()` to access that object.
 
 If you've played with the pin mode (direction), you've loaded a project that modified the mode or you just want to change modes, you can set the attribute
 
@@ -368,6 +373,35 @@ If you've played with the pin mode (direction), you've loaded a project that mod
 # simply set the tt mode
 tt.mode = RPMode.ASIC_RP_CONTROL
 ```
+
+
+### Write Your Own Script
+
+The default `main.py` does basic setup, reads the config.ini, loads the default project etc.  
+
+If you want to have some particular code run on boot, you can write your own script.  There's a little bit of required boilerplate to get this working, as the SDK needs to figure out which board it's running on and which carrier/chip is present.
+
+A full example that you can use for this is in [custom script main.py](./examples/custom_script_main.py), and you might want to start there.
+
+There are some useful hints in there, related to memory, logging and more, but the short of it is that what you really need is:
+
+```
+# to load the detector and demoboard modules
+
+from ttboard.boot.demoboard_detect import DemoboardDetect
+from ttboard.demoboard import DemoBoard
+
+# to first probe the board/breakout
+DemoboardDetect.probe()
+
+# and then get a handle to the DemoBoard object
+tt = DemoBoard.get()
+
+# pretty much it
+```
+
+See the [custom script main.py](./examples/custom_script_main.py) for all the details.
+
 
 ### Automatic Load and Default Config
 
