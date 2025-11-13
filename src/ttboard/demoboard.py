@@ -125,15 +125,14 @@ class DemoBoard:
                 'tt06': DemoboardVersion.TT06,
                 'tt07': DemoboardVersion.TT06,
                 'tt08': DemoboardVersion.TT06,
-                'tt09': DemoboardVersion.TT06,
-                'tt10': DemoboardVersion.TT06,
+                'ttDBv3': DemoboardVersion.TTDBv3,
                 
                 }
             if self.user_config.force_demoboard in versionMap:
                 log.warn(f'Demoboard detection forced to {self.user_config.force_demoboard}')
                 DemoboardDetect.force_detection(versionMap[self.user_config.force_demoboard])
             else:
-                log.error(f'Unrecognized force_demoboard setting: {self.user_config.force_demoboard}')
+                log.error(f'Unrecognized force_demoboard setting: {self.user_config.force_demoboard} ?')
             
             
             

@@ -8,6 +8,7 @@ import ttboard.util.platform as platform
 from ttboard.pins.upython import Pin
 import ttboard.pins.gpio_map
 from ttboard.pins.gpio_map import GPIOMapTT04, GPIOMapTT06
+from ttboard.pins.gpio_map_dbv3 import GPIOMapTTDBv3
 
 import ttboard.log as logging
 log = logging.getLogger(__name__)
@@ -20,13 +21,15 @@ class DemoboardVersion:
     UNKNOWN = 0
     TT04 = 1
     TT06 = 2
+    TTDBv3 = 3
     
     @classmethod 
     def to_string(cls, v:int):
         asStr = {
             cls.UNKNOWN: 'UNKNOWN',
             cls.TT04: 'TT04/TT05',
-            cls.TT06: 'TT06+'
+            cls.TT06: 'TT06+',
+            cls.TTDBv3: 'TTDBv3',
         }
         if v in asStr:
             return asStr[v]
@@ -133,6 +136,18 @@ class DemoboardDetect:
         
         log.debug("Mux twiddle has no effect, probably not TT04 db")
         return False
+    
+    @classmethod
+    def probe_rp2350(cls):
+        try: 
+            _p = Pin(37, Pin.IN)
+        except ValueError:
+            return False 
+        cls.PCB = DemoboardVersion.TTDBv3
+        cls.CarrierPresent = True
+        cls.CarrierVersion = DemoboardCarrier.TT_CARRIER # TODO: FIXME just assuming carrier here
+        return True
+    
     @classmethod 
     def rp_all_inputs(cls):
         log.debug("Setting all RP GPIO to INPUTS")
@@ -146,12 +161,9 @@ class DemoboardDetect:
     def probe(cls):
         result = False
         cls.rp_all_inputs()
-        if cls.probe_tt04mux():
+        if cls.probe_rp2350() or cls.probe_tt04mux() or cls.probe_pullups():
             cls._configure_gpiomap()
-            result = True 
-        elif cls.probe_pullups():
-            cls._configure_gpiomap()
-            result = True 
+            result = True
         else:
             log.debug("Neither pullup nor tt04mux tests conclusive, assuming TT06+ board")
             cls.PCB = DemoboardVersion.TT06
@@ -171,7 +183,8 @@ class DemoboardDetect:
         mapToUse = {
             
             DemoboardVersion.TT04: GPIOMapTT04,
-            DemoboardVersion.TT06: GPIOMapTT06
+            DemoboardVersion.TT06: GPIOMapTT06,
+            DemoboardVersion.TTDBv3: GPIOMapTTDBv3,
             
             }
         if cls.PCB in mapToUse:

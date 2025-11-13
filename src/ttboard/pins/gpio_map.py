@@ -105,7 +105,6 @@ class GPIOMapBase:
             "uio5": cls.UIO5,
             "uio6": cls.UIO6,
             "uio7": cls.UIO7,
-            "rpio29": cls.RPIO29
         }
         return retDict
         
@@ -198,6 +197,7 @@ class GPIOMapTT04(GPIOMapBase):
             "cena_uo_out1": cls.CTRL_ENA_UO_OUT1, # "ctrl_ena": cls.CTRL_ENA,
             "ncrst_uo_out2": cls.nCRST_UO_OUT2,
             "cinc_uo_out3": cls.CINC_UO_OUT3,
+            "rpio29": cls.RPIO29,
         })
         return retDict
     @classmethod
@@ -316,7 +316,8 @@ class GPIOMapTT06(GPIOMapBase):
             'uo_out0': cls.UO_OUT0,
             'uo_out1': cls.UO_OUT1,
             'uo_out2': cls.UO_OUT2,
-            'uo_out3': cls.UO_OUT3
+            'uo_out3': cls.UO_OUT3,
+            "rpio29": cls.RPIO29
         })
 
         if cls.tt07_cb_fix:
