@@ -8,7 +8,7 @@ import os
 from ttboard.boot.shuttle_properties import HardcodedShuttle
 import ttboard.log as logging
 log = logging.getLogger(__name__)
-import ttboard.fpga.fabricfox as fpgaloader
+import ttboard.fpga.fabricfoxv2 as fpgaloader
 class BitStream:
     def __init__(self, loader, filepath:str, name:str, clock_hz:int=100):
         self._filepath = filepath

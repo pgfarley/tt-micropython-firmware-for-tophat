@@ -139,20 +139,49 @@ class DemoboardDetect:
     
     @classmethod
     def probe_rp2350(cls):
-        try: 
-            _p = Pin(37, Pin.IN)
-        except ValueError:
+        if not platform.IsRP2350:
             return False 
+        
+        # already determined RP2350, so that's good
         cls.PCB = DemoboardVersion.TTDBv3
-        cls.CarrierPresent = True
-        cls.CarrierVersion = DemoboardCarrier.TT_CARRIER # TODO: FIXME just assuming carrier here
-        return True
+        
+        # check for FPGA board
+        fpga_detect_pin = GPIOMapTTDBv3.get_raw_pin(GPIOMapTTDBv3.MNG07, Pin.IN)
+        
+        # mng 7 pulled high?
+        if fpga_detect_pin():
+            cls.CarrierPresent = True
+            cls.CarrierVersion = DemoboardCarrier.FPGA
+            return True
+            
+        
+        # check for standard carrier
+        cena_pin = GPIOMapTT06.get_raw_pin(GPIOMapTTDBv3.ctrl_enable(), Pin.IN)
+        crst_pin = GPIOMapTT06.get_raw_pin(GPIOMapTTDBv3.ctrl_reset(), Pin.IN)
+        
+        crst = crst_pin()
+        cena = cena_pin()
+        
+        if (not crst) and (not cena):
+            log.debug("ctrl mux lines pulled to indicate TT carrier present on RP2350 board")
+            log.info("TTDBv3 demoboard with carrier present")
+            cls.CarrierPresent = True
+            cls.CarrierVersion = DemoboardCarrier.TT_CARRIER
+            return True
+        
+        
+        cls.CarrierVersion = DemoboardCarrier.UNKNOWN
+        return False 
+    
     
     @classmethod 
     def rp_all_inputs(cls):
         log.debug("Setting all RP GPIO to INPUTS")
         pins = []
-        for i in range(29):
+        num_io = 30
+        if platform.IsRP2350:
+            num_io = 41
+        for i in range(num_io):
             pins.append(platform.pin_as_input(i, Pin.PULL_DOWN))
             
         return pins
@@ -186,7 +215,7 @@ class DemoboardDetect:
             DemoboardVersion.TT06: GPIOMapTT06,
             DemoboardVersion.TTDBv3: GPIOMapTTDBv3,
             
-            }
+        }
         if cls.PCB in mapToUse:
             log.debug(f'Setting GPIOMap to {mapToUse[cls.PCB]}')
             ttboard.pins.gpio_map.GPIOMap = mapToUse[cls.PCB]

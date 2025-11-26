@@ -347,7 +347,7 @@ class Pins:
         return self.cena
     
     def _dumpPin(self, p:StandardPin):
-        print(f'  {p.name} {p.mode_str} {p()}') 
+        print(f'  {p.name}[{p.gpio_num}] {p.mode_str} {p()}') 
     def dump(self):
         print(f'Pins configured in mode {RPMode.to_string(self.mode)}')
         print(f'Currently:')
