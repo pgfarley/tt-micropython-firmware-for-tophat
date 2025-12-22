@@ -44,6 +44,12 @@ jobs:
         run: |
           cp -r tt_rp2350_board/ micropython/ports/rp2/boards/
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      
       - name: Get shuttle indices
         working-directory: sdk_repo
         run: |
@@ -53,16 +59,11 @@ jobs:
         working-directory: sdk_repo
         run: |
              cp -R src convwork
+             cp -R microcotb/src/microcotb convwork/
              RUNPATH="$GITHUB_WORKSPACE/sdk_repo/convwork:$PYTHONPATH"
              echo "Path is $RUNPATH"
              for chip in $TT_RUNS_SUPPORTED; do PYTHONPATH=$RUNPATH python3 $GITHUB_WORKSPACE/sdk_repo/bin/serialize_shuttle.py $GITHUB_WORKSPACE/sdk_repo/src/shuttles/$chip.json; done
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-      
       - name: Install dependencies and toolchain
         run: |
           sudo apt update
