@@ -97,10 +97,18 @@ jobs:
         run: |
              pip install uf2utils
              touch sdk_repo/src/release_${{  github.ref_name }}
-             python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root sdk_repo/src --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350.uf2
+             python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root sdk_repo/src --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
 
       - name: Upload UF2 artifact
         uses: actions/upload-artifact@v4
         with:
           name: tt-demo-rp2350-${{  github.ref_name }}.uf2
-          path: /tmp/tt-demo-rp2350.uf2
+          path: /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
+          
+      - name: Upload Release
+        uses: ncipollo/release-action@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+            artifacts: "/tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2"
+            token: ${{ secrets.GITHUB_TOKEN }}
+            generateReleaseNotes: true
