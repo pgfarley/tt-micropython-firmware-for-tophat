@@ -44,17 +44,27 @@ jobs:
         run: |
           cp -r tt_rp2350_board/ micropython/ports/rp2/boards/
 
+      - name: Prepare FS root
+        working-directory: sdk_repo
+        run: |
+             mkdir fsroot
+             mkdir fsroot/shuttles
+             cp src/main.py fsroot
+             cp src/config.ini fsroot
+             cp -r src/examples fsroot
+             cp -r bitstreams fsroot
+             
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
       
+      
       - name: Get shuttle indices
         working-directory: sdk_repo
         run: |
-             mkdir src/shuttles
-             for chip in $TT_RUNS_SUPPORTED; do wget -O src/shuttles/$chip.json "https://index.tinytapeout.com/$chip.json?fields=repo,address,commit,clock_hz,title,danger_level"; done
+             for chip in $TT_RUNS_SUPPORTED; do wget -O fsroot/shuttles/$chip.json "https://index.tinytapeout.com/$chip.json?fields=repo,address,commit,clock_hz,title,danger_level"; done
       - name: Prepare shuttle bin files
         working-directory: sdk_repo
         run: |
@@ -62,7 +72,7 @@ jobs:
              cp -R microcotb/src/microcotb convwork/
              RUNPATH="$GITHUB_WORKSPACE/sdk_repo/convwork:$PYTHONPATH"
              echo "Path is $RUNPATH"
-             for chip in $TT_RUNS_SUPPORTED; do PYTHONPATH=$RUNPATH python3 $GITHUB_WORKSPACE/sdk_repo/bin/serialize_shuttle.py $GITHUB_WORKSPACE/sdk_repo/src/shuttles/$chip.json; done
+             for chip in $TT_RUNS_SUPPORTED; do PYTHONPATH=$RUNPATH python3 $GITHUB_WORKSPACE/sdk_repo/bin/serialize_shuttle.py $GITHUB_WORKSPACE/sdk_repo/fsroot/shuttles/$chip.json; done
 
       - name: Install dependencies and toolchain
         run: |
@@ -94,10 +104,11 @@ jobs:
           
     
       - name: Build the final UF2
+        working-directory: sdk_repo
         run: |
              pip install uf2utils
-             touch sdk_repo/src/release_${{  github.ref_name }}
-             python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root sdk_repo/src --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
+             touch fsroot/release_${{  github.ref_name }}
+             python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root fsroot --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
 
       - name: Upload UF2 artifact
         uses: actions/upload-artifact@v4
