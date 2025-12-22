@@ -78,7 +78,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y build-essential git cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
-
+          pip install uf2utils
       - name: Build mpy-cross compiler
         working-directory: ./micropython
         run: make -C mpy-cross
@@ -104,11 +104,9 @@ jobs:
           
     
       - name: Build the final UF2
-        working-directory: sdk_repo
         run: |
-             pip install uf2utils
-             touch fsroot/release_${{  github.ref_name }}
-             python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root fsroot --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
+             touch sdk_repo/fsroot/release_${{  github.ref_name }}
+             python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root sdk_repo/fsroot --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
 
       - name: Upload UF2 artifact
         uses: actions/upload-artifact@v4
