@@ -10,9 +10,14 @@ import os
 
 VERSION='0.0.0'
 
-
-relfiles = list(
+try:
+    with open('/VERSION') as f:
+        for ln in f.readlines():
+            if ln.startswith('version='):
+                VERSION=ln.replace('version=', '').replace('\n', '')
+except:
+    relfiles = list(
              map(lambda v: v.replace('release_v', ''), 
                 filter(lambda f: f.startswith('release_v'), os.listdir('/'))) )
-if len(relfiles):
-    VERSION = relfiles[0]
+    if len(relfiles):
+        VERSION = relfiles[0]
