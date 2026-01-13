@@ -53,6 +53,8 @@ jobs:
              cp src/config.ini fsroot
              cp -r src/examples fsroot
              cp -r bitstreams fsroot
+             echo "version=${{github.ref_name}}" > fsroot/VERSION
+             echo "revision=$GITHUB_SHA" >> fsroot/VERSION
              
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -105,7 +107,6 @@ jobs:
     
       - name: Build the final UF2
         run: |
-             touch sdk_repo/fsroot/release_${{  github.ref_name }}
              python -m uf2utils.examples.custom_pico --family rp2350-arm-s --block_count 512 --fs_offset 0x10200000 --fs_root sdk_repo/fsroot --upython micropython/ports/rp2/build-tt_rp2350_board/firmware.uf2 --out /tmp/tt-demo-rp2350-${{  github.ref_name }}.uf2
 
       - name: Upload UF2 artifact
