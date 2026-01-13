@@ -53,7 +53,7 @@ jobs:
              cp src/config.ini fsroot
              cp -r src/examples fsroot
              cp -r bitstreams fsroot
-             echo "version=${github.ref_name}" > sdk_repo/fsroot/release_${{  github.ref_name }}
+             echo "version=${{github.ref_name}}" > sdk_repo/fsroot/release_${{  github.ref_name }}
              echo "revision=$GITHUB_SHA" >> sdk_repo/fsroot/release_${{ github.ref_name }}
              
       - name: Set up Python
