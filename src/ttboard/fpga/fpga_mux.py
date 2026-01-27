@@ -31,7 +31,9 @@ class BitStream:
         return self._clock_hz
     
     def __repr__(self):
-        return f'<BitStream {self.name}>'
+        return f'<FPGA BitStream {self.name}>'
+    def __str__(self):
+        return f'FPGA:{self.name}'
     
 class BitStreamIndex:
     def __init__(self, loader, dirpath:str):

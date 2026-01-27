@@ -4,7 +4,7 @@ Created on Nov 8, 2025
 @author: Pat Deegan
 @copyright: Copyright (C) 2025 Pat Deegan, https://psychogenic.com
 '''
-from ttboard.pins.gpio_map import GPIOMapBase
+from ttboard.pins.gpio_map_base import GPIOMapBase
 
 class GPIOMapTTDBv3Alpha(GPIOMapBase):
     RP_PROJCLK = 21
