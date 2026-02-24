@@ -2,7 +2,7 @@ name: UF2 Generate and Release
 
 on:
   push:
-    branches: [ ttdbv3 ] 
+    branches: [ ttdbv3-RP2350-register-fix ] 
   workflow_dispatch:   # Allows manual triggering
 
 jobs:
